@@ -1,0 +1,26 @@
+{
+  "name": "harness-tools",
+  "owner": {
+    "name": "satoshi-yamamoto-dev"
+  },
+  "description": "Claude Code plugins for verifiable long-running application development.",
+  "version": "0.1.0",
+  "plugins": [
+    {
+      "name": "longrun-app-dev",
+      "source": "./plugins/longrun-app-dev",
+      "description": "A verifiable long-running application development harness for Claude Code.",
+      "version": "0.1.0",
+      "author": {
+        "name": "satoshi-yamamoto-dev"
+      },
+      "homepage": "https://satoshi-yamamoto-dev.github.io/harness-longrun-app-dev/",
+      "repository": "https://github.com/satoshi-yamamoto-dev/harness-longrun-app-dev",
+      "license": "MIT",
+      "keywords": ["application-development", "agent-sdk", "long-running", "qa"],
+      "category": "development",
+      "tags": ["development", "evaluation", "orchestration"],
+      "strict": true
+    }
+  ]
+}

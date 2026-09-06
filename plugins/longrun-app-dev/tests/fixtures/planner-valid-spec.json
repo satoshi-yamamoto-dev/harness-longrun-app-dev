@@ -1,0 +1,193 @@
+{
+  "schemaVersion": 1,
+  "specId": "study-flow",
+  "title": "Study Flow",
+  "summary": "A controllable study planner that converts a syllabus and weekly availability into an adaptive plan with visible progress.",
+  "background": "Learners often know what they must cover but struggle to distribute work realistically and recover when plans slip.",
+  "targetUsers": [
+    {
+      "id": "learner",
+      "description": "A learner managing a syllabus alongside limited weekly time.",
+      "needs": [
+        "A realistic schedule",
+        "Clear progress",
+        "Safe replanning"
+      ]
+    }
+  ],
+  "problems": [
+    "Static calendars do not account for workload or missed sessions",
+    "Opaque recommendations are difficult to trust"
+  ],
+  "scenarios": [
+    {
+      "id": "scenario-plan",
+      "actorId": "learner",
+      "goal": "Create a first weekly plan",
+      "steps": [
+        "Enter syllabus topics and deadlines",
+        "Set available study windows",
+        "Review and approve the proposed plan"
+      ],
+      "expectedOutcome": "The learner has an approved schedule covering required work without overlapping unavailable time."
+    },
+    {
+      "id": "scenario-recover",
+      "actorId": "learner",
+      "goal": "Recover from a missed session",
+      "steps": [
+        "Mark a session missed",
+        "Review the impact and proposed alternatives",
+        "Approve one revised schedule"
+      ],
+      "expectedOutcome": "Remaining work is rescheduled without silently dropping a required topic."
+    }
+  ],
+  "features": [
+    {
+      "id": "feature-syllabus",
+      "description": "Capture topics, estimated effort, priority, and deadlines.",
+      "priority": "must",
+      "acceptanceCriterionIds": [
+        "ac-syllabus"
+      ]
+    },
+    {
+      "id": "feature-schedule",
+      "description": "Build and edit a weekly schedule constrained by learner availability.",
+      "priority": "must",
+      "acceptanceCriterionIds": [
+        "ac-schedule",
+        "ac-capacity"
+      ]
+    },
+    {
+      "id": "feature-progress",
+      "description": "Track completed, missed, and upcoming study sessions.",
+      "priority": "must",
+      "acceptanceCriterionIds": [
+        "ac-progress"
+      ]
+    },
+    {
+      "id": "feature-replan",
+      "description": "Explain and propose recovery options after plan changes.",
+      "priority": "should",
+      "acceptanceCriterionIds": [
+        "ac-replan",
+        "ac-ai-fallback",
+        "ac-replan-cancel"
+      ]
+    }
+  ],
+  "nonFunctionalRequirements": [
+    {
+      "id": "nfr-accessibility",
+      "description": "All planning and progress workflows are keyboard operable and expose meaningful labels.",
+      "rationale": "Study planning must remain usable with assistive technology."
+    },
+    {
+      "id": "nfr-privacy",
+      "description": "Syllabus and availability data remain private to the learner by default.",
+      "rationale": "Schedules can reveal sensitive personal routines."
+    }
+  ],
+  "data": [
+    {
+      "id": "data-topic",
+      "entity": "Topic",
+      "description": "A syllabus unit with effort, priority, deadline, and completion state."
+    },
+    {
+      "id": "data-session",
+      "entity": "Study session",
+      "description": "A scheduled time block linked to one or more topics and its outcome."
+    }
+  ],
+  "externalIntegrations": [],
+  "uxPrinciples": [
+    "Show why each session was scheduled",
+    "Require confirmation before AI changes the plan",
+    "Keep missed work visible until resolved"
+  ],
+  "constraints": [
+    "The core planner remains usable when AI recommendations are unavailable",
+    "No schedule change is applied without learner confirmation",
+    "Initial scope is one learner in a private local workspace; sharing and multi-user hosting are out of scope.",
+    "Send syllabus and availability to AI only after explicit consent; declining consent preserves manual planning.",
+    "Insufficient capacity must remain visible as unassigned effort; never silently omit work or overwrite an approved plan."
+  ],
+  "acceptanceCriteria": [
+    {
+      "id": "ac-syllabus",
+      "description": "A learner can create and edit topics with effort and deadlines.",
+      "verification": "Create two topics, edit one deadline, reload, and verify both values persist."
+    },
+    {
+      "id": "ac-schedule",
+      "description": "An approved schedule covers required topics only within available windows.",
+      "verification": "Use two required 60-minute topics and two non-overlapping 60-minute windows before their deadlines. Approve a plan; verify exactly 120 minutes assigned, no overlap, no unavailable time, no missed deadline, and persistence after reload."
+    },
+    {
+      "id": "ac-progress",
+      "description": "Completion and missed states update the visible weekly progress.",
+      "verification": "Complete one session and miss another, then verify counts, states, and remaining effort."
+    },
+    {
+      "id": "ac-replan",
+      "description": "A missed session produces explained alternatives and applies only the selected option.",
+      "verification": "Miss a 60-minute session with two eligible future windows. Inspect two explained alternatives, choose one, reload, and verify only that option persists. With one eligible window show one valid option; with none explain infeasibility without inventing a schedule."
+    },
+    {
+      "id": "ac-capacity",
+      "description": "Insufficient capacity is visible without dropping work or changing the approved plan.",
+      "verification": "Request 180 minutes of work with only 120 available before the deadline. Verify at least 60 minutes visibly unassigned, an explanation, and an unchanged approved schedule until constraints are changed and approved."
+    },
+    {
+      "id": "ac-ai-fallback",
+      "description": "Manual planning remains usable when AI fails or returns an invalid schedule.",
+      "verification": "Simulate an AI timeout and an out-of-bounds draft. Verify an actionable error, unchanged approved state, and successful manual rescheduling and completion tracking after reload."
+    },
+    {
+      "id": "ac-replan-cancel",
+      "description": "Cancelling or rejecting drafts preserves approved state.",
+      "verification": "Record the approved schedule, request alternatives, cancel, and reload. Verify unchanged schedule and visible missed work. Repeat by rejecting every alternative."
+    },
+    {
+      "id": "ac-accessibility",
+      "description": "Planning and progress flows work with a keyboard and meaningful accessible names.",
+      "verification": "Without a pointer, create a topic, edit availability, approve a plan, and complete a session. Verify visible focus, no keyboard trap, and meaningful accessible names for each used control."
+    },
+    {
+      "id": "ac-privacy",
+      "description": "AI transmission requires consent and schedules are not publicly exposed.",
+      "verification": "Enter distinctive syllabus data, decline consent, and inspect network requests during manual planning: no syllabus or availability is sent to AI. Verify transmission only after consent, and inspect the app access boundary for unauthenticated public exposure."
+    }
+  ],
+  "aiAssessment": {
+    "adopted": true,
+    "rationale": "AI can compare workload, deadlines, and preferences to propose explainable recovery options, while deterministic constraints and explicit approval protect schedule integrity.",
+    "tasks": [
+      {
+        "id": "ai-recovery",
+        "instruction": "After consent, read syllabus and availability, propose feasible recovery schedules, explain tradeoffs or infeasibility, and wait for approval. Reject invalid drafts; on failure keep manual planning usable and the approved schedule unchanged.",
+        "tools": [
+          "Read syllabus",
+          "Read availability",
+          "Draft schedule alternatives"
+        ],
+        "expectedStateChanges": [
+          "Create reviewable draft alternatives",
+          "Persist only the learner-approved schedule"
+        ],
+        "acceptanceCriterionIds": [
+          "ac-replan",
+          "ac-capacity",
+          "ac-ai-fallback",
+          "ac-replan-cancel",
+          "ac-privacy"
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,16 @@
+node_modules/
+.pnpm-store/
+*.tsbuildinfo
+/dist/
+examples/web-app/dist/
+.longrun-app-dev/
+.claude/settings.local.json
+.env
+.env.*
+!.env.example
+!.env.template
+*.pem
+*.key
+*.p12
+*.pfx
+credentials.json

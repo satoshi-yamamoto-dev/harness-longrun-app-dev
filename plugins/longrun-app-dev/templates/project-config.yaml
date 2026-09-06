@@ -1,0 +1,34 @@
+schemaVersion: 1
+
+models:
+  planner: "<model-id>"
+  generator: "<model-id>"
+  evaluator: "<model-id>"
+
+evaluation:
+  mode: required
+
+limits:
+  maxQaRounds: 3
+  maxDurationMinutes: 240
+  maxCostUsd: 150
+  maxConsecutiveErrors: 3
+
+quality:
+  thresholds:
+    productDepth: 8
+    functionality: 8
+    visualDesign: 8
+    codeQuality: 8
+
+adapter:
+  type: auto
+
+git:
+  workBranchPrefix: "longrun-app-dev/"
+  commitEachBuildRound: true
+  allowPush: false
+
+logging:
+  saveFullPrompts: false
+  saveFullResponses: false

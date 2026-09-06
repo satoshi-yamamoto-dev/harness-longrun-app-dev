@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://satoshi-yamamoto-dev.github.io/harness-longrun-app-dev/schemas/qa-result.schema.json",
+  "title": "QA result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "runId", "specId", "round", "startedAt", "completedAt", "verdict", "scores", "issues", "requirementResults", "evidence", "summary"],
+  "properties": {
+    "schemaVersion": { "const": 1 }, "runId": { "$ref": "#/$defs/text" }, "specId": { "$ref": "#/$defs/text" }, "round": { "type": "integer", "minimum": 1 },
+    "startedAt": { "$ref": "#/$defs/dateTime" }, "completedAt": { "$ref": "#/$defs/dateTime" }, "verdict": { "enum": ["pass", "fail"] },
+    "scores": {
+      "type": "object", "additionalProperties": false, "required": ["productDepth", "functionality", "visualDesign", "codeQuality"],
+      "properties": { "productDepth": { "$ref": "#/$defs/score" }, "functionality": { "$ref": "#/$defs/score" }, "visualDesign": { "$ref": "#/$defs/score" }, "codeQuality": { "$ref": "#/$defs/score" } }
+    },
+    "uiScores": {
+      "type": "object", "additionalProperties": false, "required": ["designQuality", "originality", "craft", "functionality"],
+      "properties": { "designQuality": { "$ref": "#/$defs/score" }, "originality": { "$ref": "#/$defs/score" }, "craft": { "$ref": "#/$defs/score" }, "functionality": { "$ref": "#/$defs/score" } }
+    },
+    "issues": { "type": "array", "items": { "$ref": "#/$defs/issue" } },
+    "requirementResults": { "type": "array", "items": { "$ref": "#/$defs/requirementResult" } },
+    "evidence": { "type": "array", "items": { "$ref": "#/$defs/artifact" } },
+    "summary": { "$ref": "#/$defs/text" }
+  },
+  "$defs": {
+    "text": { "type": "string", "minLength": 1 }, "dateTime": { "type": "string", "format": "date-time" },
+    "score": { "type": "object", "additionalProperties": false, "required": ["score", "threshold", "applicable", "rationale"], "properties": { "score": { "type": ["number", "null"], "minimum": 0, "maximum": 10 }, "threshold": { "type": "number", "minimum": 0, "maximum": 10 }, "applicable": { "type": "boolean" }, "rationale": { "$ref": "#/$defs/text" } } },
+    "artifact": { "type": "object", "additionalProperties": false, "required": ["kind", "path"], "properties": { "kind": { "$ref": "#/$defs/text" }, "path": { "$ref": "#/$defs/text" }, "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" } } },
+    "issue": { "type": "object", "additionalProperties": false, "required": ["issueId", "title", "severity", "specificationIds", "reproductionSteps", "expectedResult", "actualResult", "evidence"], "properties": { "issueId": { "$ref": "#/$defs/text" }, "title": { "$ref": "#/$defs/text" }, "severity": { "enum": ["critical", "high", "medium", "low"] }, "specificationIds": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/text" }, "uniqueItems": true }, "reproductionSteps": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/text" } }, "expectedResult": { "$ref": "#/$defs/text" }, "actualResult": { "$ref": "#/$defs/text" }, "evidence": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/artifact" } } } },
+    "requirementResult": { "type": "object", "additionalProperties": false, "required": ["requirementId", "status", "evidence"], "properties": { "requirementId": { "$ref": "#/$defs/text" }, "status": { "enum": ["passed", "failed", "not-tested"] }, "evidence": { "type": "array", "items": { "$ref": "#/$defs/artifact" } }, "notes": { "$ref": "#/$defs/text" } } }
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "name": "@harness-tools/longrun-app-dev",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "longrun-app-dev": "bin/longrun-app-dev"
+  },
+  "files": [
+    ".claude-plugin/",
+    "agents/",
+    "bin/",
+    "LICENSE",
+    "prompts/",
+    "rubrics/",
+    "runtime/dist/",
+    "schemas/",
+    "skills/",
+    "templates/"
+  ],
+  "scripts": {
+    "build": "node scripts/build-runtime.mjs",
+    "test": "pnpm build && pnpm test:unit",
+    "test:unit": "node --test tests/*.test.mjs",
+    "typecheck": "tsc --noEmit --project runtime/tsconfig.json",
+    "validate:schemas": "node scripts/validate-schemas.mjs"
+  },
+  "devDependencies": {
+    "@types/node": "^24.13.3",
+    "ajv": "8.20.0",
+    "ajv-formats": "3.0.1",
+    "esbuild": "0.28.2",
+    "typescript": "catalog:",
+    "yaml": "2.9.0"
+  },
+  "dependencies": {
+    "@anthropic-ai/claude-agent-sdk": "0.3.258",
+    "@playwright/mcp": "0.0.80"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1, "specId": "task-desk", "title": "Task Desk",
+  "summary": "A personal task list with completion and reload persistence.",
+  "background": "A learner needs a short local list of work.",
+  "targetUsers": [{ "id": "person", "description": "A person tracking work", "needs": ["Add work", "Complete work", "Keep work after reload"] }],
+  "problems": ["Tasks disappear or cannot be completed in unreliable lists"],
+  "scenarios": [{ "id": "manage", "actorId": "person", "goal": "Track a task through completion", "steps": ["Add a named task", "Complete it", "Reload"], "expectedOutcome": "Completed task is retained" }],
+  "features": [{ "id": "task-list", "description": "Create tasks, complete them, and retain them across reloads", "priority": "must", "acceptanceCriterionIds": ["ac-add", "ac-complete", "ac-persist"] }],
+  "nonFunctionalRequirements": [], "data": [{ "id": "tasks", "entity": "Task", "description": "Title and completion stored in browser localStorage under task-desk" }],
+  "externalIntegrations": [], "uxPrinciples": ["Clear focus and responsive layout"], "constraints": ["Single local user; no remote database or account required"],
+  "acceptanceCriteria": [
+    { "id": "ac-add", "description": "A nonempty task can be added and blank tasks rejected", "verification": "Add Review notes and confirm it appears; attempt a blank task and verify no new row" },
+    { "id": "ac-complete", "description": "Complete changes the task state", "verification": "Click Complete on Review notes and verify a completed state and disabled Completed button" },
+    { "id": "ac-persist", "description": "Tasks and completion survive reload", "verification": "Add and complete a task, inspect localStorage task-desk, reload and confirm both task and state remain" }
+  ],
+  "aiAssessment": { "adopted": false, "rationale": "Deterministic task tracking needs no AI", "tasks": [] }
+}

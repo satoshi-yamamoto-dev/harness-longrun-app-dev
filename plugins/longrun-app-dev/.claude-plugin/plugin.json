@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "longrun-app-dev",
+  "displayName": "Long-running App Development",
+  "version": "0.1.0",
+  "description": "A verifiable long-running application development harness with independent planning, generation, and evaluation.",
+  "author": {
+    "name": "satoshi-yamamoto-dev"
+  },
+  "homepage": "https://satoshi-yamamoto-dev.github.io/harness-longrun-app-dev/",
+  "repository": "https://github.com/satoshi-yamamoto-dev/harness-longrun-app-dev",
+  "license": "MIT",
+  "keywords": ["application-development", "agent-sdk", "long-running", "qa"]
+}

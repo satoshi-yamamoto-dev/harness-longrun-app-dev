@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://satoshi-yamamoto-dev.github.io/harness-longrun-app-dev/schemas/state.schema.json",
+  "title": "longrun-app-dev Run state",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "runId", "phase", "qaRound", "buildRound", "startedAt", "updatedAt", "projectRoot", "initialGit", "usage", "consecutiveApiFailures", "latestArtifacts"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "runId": { "$ref": "#/$defs/nonEmptyString" },
+    "phase": { "enum": ["INITIALIZING", "PLANNING", "BUILDING", "EVALUATING", "PAUSED", "COMPLETED", "STOPPED", "FAILED"] },
+    "qaRound": { "type": "integer", "minimum": 0 },
+    "buildRound": { "type": "integer", "minimum": 0 },
+    "startedAt": { "$ref": "#/$defs/dateTime" },
+    "updatedAt": { "$ref": "#/$defs/dateTime" },
+    "completedAt": { "$ref": "#/$defs/dateTime" },
+    "projectRoot": { "$ref": "#/$defs/nonEmptyString" },
+    "initialGit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["branch", "headSha", "hadUncommittedChanges"],
+      "properties": {
+        "branch": { "$ref": "#/$defs/nonEmptyString" },
+        "headSha": { "type": "string", "pattern": "^[0-9a-fA-F]{40,64}$" },
+        "hadUncommittedChanges": { "type": "boolean" }
+      }
+    },
+    "usage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["inputTokens", "outputTokens", "estimatedCostUsd", "elapsedMs"],
+      "properties": {
+        "inputTokens": { "type": "integer", "minimum": 0 },
+        "outputTokens": { "type": "integer", "minimum": 0 },
+        "estimatedCostUsd": { "type": "number", "minimum": 0 },
+        "elapsedMs": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "consecutiveApiFailures": { "type": "integer", "minimum": 0 },
+    "latestArtifacts": { "type": "array", "items": { "$ref": "#/$defs/artifact" } },
+    "resumeTarget": { "enum": ["BUILDING", "EVALUATING"] },
+    "terminationReason": { "enum": ["quality-passed", "quality-not-met", "cost-limit", "duration-limit", "qa-round-limit", "manual-stop", "api-failure-limit", "unrecoverable-error"] },
+    "error": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "message", "retryable"],
+      "properties": {
+        "code": { "$ref": "#/$defs/nonEmptyString" },
+        "message": { "$ref": "#/$defs/nonEmptyString" },
+        "retryable": { "type": "boolean" }
+      }
+    }
+  },
+  "$defs": {
+    "nonEmptyString": { "type": "string", "minLength": 1 },
+    "dateTime": { "type": "string", "format": "date-time" },
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "path"],
+      "properties": {
+        "kind": { "$ref": "#/$defs/nonEmptyString" },
+        "path": { "$ref": "#/$defs/nonEmptyString" },
+        "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+      }
+    }
+  }
+}

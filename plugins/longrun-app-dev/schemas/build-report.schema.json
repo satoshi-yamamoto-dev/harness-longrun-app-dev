@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://satoshi-yamamoto-dev.github.io/harness-longrun-app-dev/schemas/build-report.schema.json",
+  "title": "Build report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "runId", "specId", "round", "startedAt", "completedAt", "summary", "changedFiles", "requirementResults", "qaIssueResults", "verification", "artifacts", "knownIssues"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "runId": { "$ref": "#/$defs/text" }, "specId": { "$ref": "#/$defs/text" }, "round": { "type": "integer", "minimum": 1 },
+    "startedAt": { "$ref": "#/$defs/dateTime" }, "completedAt": { "$ref": "#/$defs/dateTime" }, "summary": { "$ref": "#/$defs/text" },
+    "changedFiles": { "type": "array", "items": { "$ref": "#/$defs/changedFile" } },
+    "requirementResults": { "type": "array", "items": { "$ref": "#/$defs/requirementResult" } },
+    "qaIssueResults": { "type": "array", "items": { "$ref": "#/$defs/qaResolution" } },
+    "verification": { "type": "array", "items": { "$ref": "#/$defs/commandResult" } },
+    "artifacts": { "type": "array", "items": { "$ref": "#/$defs/artifact" } },
+    "knownIssues": { "type": "array", "items": { "$ref": "#/$defs/knownIssue" } }
+  },
+  "$defs": {
+    "text": { "type": "string", "minLength": 1 }, "dateTime": { "type": "string", "format": "date-time" },
+    "textArray": { "type": "array", "items": { "$ref": "#/$defs/text" }, "uniqueItems": true },
+    "changedFile": { "type": "object", "additionalProperties": false, "required": ["path", "change", "summary"], "properties": { "path": { "$ref": "#/$defs/text" }, "change": { "enum": ["added", "modified", "deleted"] }, "summary": { "$ref": "#/$defs/text" } } },
+    "requirementResult": { "type": "object", "additionalProperties": false, "required": ["requirementId", "status", "evidence"], "properties": { "requirementId": { "$ref": "#/$defs/text" }, "status": { "enum": ["implemented", "partial", "blocked"] }, "evidence": { "$ref": "#/$defs/textArray" }, "notes": { "$ref": "#/$defs/text" } } },
+    "qaResolution": { "type": "object", "additionalProperties": false, "required": ["issueId", "status", "evidence"], "properties": { "issueId": { "$ref": "#/$defs/text" }, "status": { "enum": ["unaddressed", "resolved", "not-reproducible", "design-changed"] }, "evidence": { "$ref": "#/$defs/textArray" }, "notes": { "$ref": "#/$defs/text" } } },
+    "commandResult": { "type": "object", "additionalProperties": false, "required": ["command", "durationMs", "exitCode", "status"], "properties": { "command": { "$ref": "#/$defs/text" }, "durationMs": { "type": "integer", "minimum": 0 }, "exitCode": { "type": ["integer", "null"] }, "status": { "enum": ["passed", "failed", "skipped"] }, "summary": { "type": "string" } } },
+    "artifact": { "type": "object", "additionalProperties": false, "required": ["kind", "path"], "properties": { "kind": { "$ref": "#/$defs/text" }, "path": { "$ref": "#/$defs/text" }, "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" } } },
+    "knownIssue": { "type": "object", "additionalProperties": false, "required": ["id", "severity", "description", "relatedRequirementIds"], "properties": { "id": { "$ref": "#/$defs/text" }, "severity": { "enum": ["critical", "high", "medium", "low"] }, "description": { "$ref": "#/$defs/text" }, "relatedRequirementIds": { "$ref": "#/$defs/textArray" } } }
+  }
+}

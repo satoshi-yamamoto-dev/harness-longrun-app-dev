@@ -1,0 +1,22 @@
+[
+  {
+    "id": "personal-finance",
+    "request": "Build a private household spending tracker. It should make recurring expenses and unusual changes easy to understand.",
+    "expectedSignals": ["transactions", "recurring", "comparison", "privacy", "verification"]
+  },
+  {
+    "id": "ai-study-coach",
+    "request": "Create a study planner that turns a learner's syllabus and available hours into a realistic weekly plan. Add AI only where it produces a complete, controllable outcome.",
+    "expectedSignals": ["schedule", "progress", "AI", "user control", "fallback"]
+  },
+  {
+    "id": "incident-operations",
+    "request": "Make a shared incident dashboard for a small SaaS team. Responders need ownership, a timeline, customer impact, and a reliable handoff.",
+    "expectedSignals": ["incident", "ownership", "timeline", "handoff", "audit"]
+  },
+  {
+    "id": "community-events",
+    "request": "I want a local community events portal for organizers and residents.",
+    "expectedSignals": ["organizer", "resident", "discovery", "moderation", "accessibility"]
+  }
+]

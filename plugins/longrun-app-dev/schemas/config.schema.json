@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://satoshi-yamamoto-dev.github.io/harness-longrun-app-dev/schemas/config.schema.json",
+  "title": "longrun-app-dev configuration",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "models", "evaluation", "limits", "quality", "adapter", "git", "logging"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "models": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["planner", "generator", "evaluator"],
+      "properties": {
+        "planner": { "$ref": "#/$defs/nonEmptyString" },
+        "generator": { "$ref": "#/$defs/nonEmptyString" },
+        "evaluator": { "$ref": "#/$defs/nonEmptyString" }
+      }
+    },
+    "evaluation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode"],
+      "properties": { "mode": { "const": "required" } }
+    },
+    "limits": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["maxQaRounds", "maxDurationMinutes", "maxCostUsd", "maxConsecutiveErrors"],
+      "properties": {
+        "maxQaRounds": { "type": "integer", "minimum": 1 },
+        "maxDurationMinutes": { "type": "integer", "minimum": 1 },
+        "maxCostUsd": { "type": "number", "exclusiveMinimum": 0 },
+        "maxConsecutiveErrors": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "quality": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["thresholds"],
+      "properties": {
+        "thresholds": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["productDepth", "functionality", "visualDesign", "codeQuality"],
+          "properties": {
+            "productDepth": { "$ref": "#/$defs/score" },
+            "functionality": { "$ref": "#/$defs/score" },
+            "visualDesign": { "$ref": "#/$defs/score" },
+            "codeQuality": { "$ref": "#/$defs/score" }
+          }
+        }
+      }
+    },
+    "adapter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type"],
+      "properties": {
+        "type": { "enum": ["auto", "web"] },
+        "setup": { "type": "string" },
+        "build": { "type": "string" },
+        "start": { "type": "string" },
+        "test": { "type": "string" },
+        "lint": { "type": "string" },
+        "stop": { "type": "string" }
+      }
+    },
+    "git": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["workBranchPrefix", "commitEachBuildRound", "allowPush"],
+      "properties": {
+        "workBranchPrefix": { "$ref": "#/$defs/nonEmptyString" },
+        "commitEachBuildRound": { "type": "boolean" },
+        "allowPush": { "const": false }
+      }
+    },
+    "logging": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["saveFullPrompts", "saveFullResponses"],
+      "properties": {
+        "saveFullPrompts": { "type": "boolean" },
+        "saveFullResponses": { "type": "boolean" }
+      }
+    }
+  },
+  "$defs": {
+    "nonEmptyString": { "type": "string", "minLength": 1 },
+    "score": { "type": "number", "minimum": 0, "maximum": 10 }
+  }
+}

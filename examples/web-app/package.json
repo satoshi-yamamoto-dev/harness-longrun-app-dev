@@ -1,0 +1,11 @@
+{
+  "name": "longrun-web-fixture",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "lint": "node --check server.mjs && node --check public/app.js",
+    "start": "node server.mjs",
+    "test": "node --test tests/*.test.mjs"
+  }
+}
