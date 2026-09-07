@@ -22,4 +22,6 @@ SDK PreToolUseで宣言外ツール、明示的な公開・転送・破壊的DB�
 
 ## 文書公開
 
-GitHub Pages用の入口はdocs/index.md、設定はdocs/_config.ymlです。公開時にはリポジトリ管理者がPagesの公開元を対象ブランチの `/docs` に設定します。この変更では公開設定、push、デプロイを実行しません。利用者向け手動手順は[初期構築ガイド](setup.md)に集約します。
+GitHub Pagesは対象ブランチの `/docs` を公開元にします。公開する利用ガイドは[機能の概要](index.md)、[クイックスタート](setup.md)、[各機能の使い方](usage.md)の順に構成します。要件定義・開発計画・本書・architecture・reviewsは、docs/_config.ymlのexcludeで公開対象から除外しています。リンクを外すだけでなく、生成されるサイトに含めない方針です。
+
+過去の環境構築記録はsetup-history.mdに保管し、公開対象から除外しています。過去時点の記録であり、現在の利用手順はsetup.mdとusage.mdを参照してください。

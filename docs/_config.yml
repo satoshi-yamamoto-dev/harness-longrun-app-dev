@@ -2,3 +2,10 @@ title: longrun-app-dev
 description: アプリ実装と独立評価を反復するClaude Code Plugin
 theme: jekyll-theme-cayman
 markdown: kramdown
+exclude:
+  - requirements.md
+  - development-plan.md
+  - developer-guide.md
+  - setup-history.md
+  - architecture/
+  - reviews/
