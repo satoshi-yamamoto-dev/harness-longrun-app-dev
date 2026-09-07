@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { mkdtemp, readFile, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, symlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 import os from "node:os";
 import test from "node:test";
@@ -24,6 +24,25 @@ test("browser actions and screenshots are saved with Run-relative evidence paths
   assert.match(await readFile(path.join(root, snap.evidence.path), "utf8"), /Add/);
   assert.equal(calls[3].args.target, "e2");
   assert.ok(path.isAbsolute(calls[4].args.filename));
+});
+
+test("evidence references remain Run-relative through a directory alias", async () => {
+  const parent = await mkdtemp(path.join(os.tmpdir(), "qa-evidence-alias-"));
+  const root = path.join(parent, "run");
+  const alias = path.join(parent, "alias");
+  await mkdir(root);
+  await symlink(root, alias, process.platform === "win32" ? "junction" : "dir");
+  const tools = { async call(_name, args) {
+    await writeFile(args.filename, "mock screenshot");
+    return { content: [] };
+  } };
+  const evidence = new PlaywrightEvidence(tools, alias, path.join(alias, "qa/evidence"));
+  const text = await evidence.saveText("snapshot", "snapshot.txt", "snapshot");
+  const screenshot = await evidence.screenshot("page.png");
+  assert.equal(text.path, "qa/evidence/snapshot.txt");
+  assert.equal(screenshot.path, "qa/evidence/page.png");
+  assert.equal(await readFile(path.join(alias, text.path), "utf8"), "snapshot");
+  assert.equal(await readFile(path.join(alias, screenshot.path), "utf8"), "mock screenshot");
 });
 
 test("API observations retain real status/body and storage inspection targets declared keys", async () => {

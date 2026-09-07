@@ -33,8 +33,8 @@ export class PlaywrightEvidence {
     catch (error) { if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error; }
     return result;
   }
-  private reference(kind: string, absolute: string): ArtifactReference {
-    return { kind, path: relative(resolve(this.runRoot), absolute).split(sep).join("/") };
+  private async reference(kind: string, absolute: string): Promise<ArtifactReference> {
+    return { kind, path: relative(await realpath(this.runRoot), absolute).split(sep).join("/") };
   }
   async saveText(kind: string, filename: string, text: string): Promise<ArtifactReference> {
     const target = await this.location(filename);

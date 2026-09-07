@@ -187,8 +187,8 @@ var PlaywrightEvidence = class {
     }
     return result;
   }
-  reference(kind, absolute) {
-    return { kind, path: relative(resolve3(this.runRoot), absolute).split(sep).join("/") };
+  async reference(kind, absolute) {
+    return { kind, path: relative(await realpath(this.runRoot), absolute).split(sep).join("/") };
   }
   async saveText(kind, filename, text) {
     const target = await this.location(filename);
@@ -371,4 +371,4 @@ export {
   renderQaMarkdown,
   Evaluator
 };
-//# sourceMappingURL=chunk-22HC24YG.js.map
+//# sourceMappingURL=chunk-LU5E62DC.js.map

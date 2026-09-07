@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { mkdtemp, readFile, writeFile } from "node:fs/promises";
+import { mkdtemp, readFile, realpath, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
@@ -59,7 +59,7 @@ async function fixture(options = {}) {
     qaCount++;
     if (options.badQa) return result("invalid QA", "qa");
     const data = JSON.parse(request.prompt.slice(request.prompt.indexOf("{"), request.prompt.indexOf("\n\nReturn")));
-    const evidence = ["screenshot", "snapshot", "interaction"].map((kind) => ({ kind, path: `${path.relative(path.join(root, ".longrun-app-dev/runs", data.runId), data.evidenceRoot).replaceAll("\\", "/")}/${kind}-${data.round}.txt` }));
+    const evidence = ["screenshot", "snapshot", "interaction"].map((kind) => ({ kind, path: `${path.relative(data.runRoot, data.evidenceRoot).replaceAll("\\", "/")}/${kind}-${data.round}.txt` }));
     for (const item of evidence) await writeFile(path.join(data.evidenceRoot, path.basename(item.path)), "mock evidence");
     const fail = options.alwaysFail || (options.failFirst && qaCount === 1);
     const report = { schemaVersion: 1, runId: data.runId, specId: spec.specId, round: data.round, startedAt: "2026-09-05T00:00:00Z", completedAt: "2026-09-05T00:01:00Z", verdict: "pass", scores: scores(),
@@ -201,7 +201,8 @@ test("clean refuses active ownership and nonterminal state, deleting only the se
   await assert.rejects(cleanRun(run.root, run.layout.runId), /Only terminal/);
   await run.store.saveJson("state.json", "state", run.state);
   const marker = path.join(run.root, "user.txt"); await writeFile(marker, "keep");
-  assert.equal(await cleanRun(run.root, run.layout.runId), run.layout.runRoot);
+  const canonicalRunRoot = await realpath(run.layout.runRoot);
+  assert.equal(await cleanRun(run.root, run.layout.runId), canonicalRunRoot);
   await assert.rejects(readFile(path.join(run.layout.runRoot, "state.json")), { code: "ENOENT" });
   assert.equal(await readFile(marker, "utf8"), "keep");
 });
