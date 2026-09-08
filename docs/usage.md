@@ -11,6 +11,15 @@ title: 各機能の使い方
 
 Claude Code内の `/longrun-app-dev:...` コマンドは `init` と `start` の2つです。それ以外はPowerShellなどのターミナルからCLIで実行します。
 
+## できること
+
+- 短い要求からアプリ全体の仕様を作成する
+- 仕様に沿って既存のWebアプリを実装・修正する
+- 実装担当とは別のエージェントがブラウザで動作を評価する
+- 評価で見つかった問題を、設定した上限内で修正・再評価する
+- 実行結果、評価レポート、スクリーンショットなどの証拠を保存する
+- 実行状況の確認、停止、再開、不要な実行記録の削除を行う
+
 ## 1. 初期設定する：init
 
 Claude Code内で実行します。
@@ -31,6 +40,16 @@ Claude Code内で実行します。
 | `limits.maxQaRounds` | 評価の最大回数 |
 | `limits.maxConsecutiveErrors` | 連続APIエラーの上限 |
 | `quality.thresholds` | 品質評価の合格点 |
+
+例えば、小さな試行には次のように上限を設定します。
+
+```yaml
+limits:
+  maxQaRounds: 1
+  maxDurationMinutes: 15
+  maxCostUsd: 5
+  maxConsecutiveErrors: 3
+```
 
 評価は必須です。`evaluation.mode` は `required` のまま使います。設定を編集したら、次の `doctor` で確認します。
 
