@@ -8,3 +8,4 @@ export type { BrowserTools, BrowserToolResult } from "./evidence.js";
 export { applyWebThresholds, validateThresholds, QUALITY_DIMENSIONS, UI_DIMENSIONS } from "./scoring.js";
 export { Evaluator, EvaluationError, validateQaReferences, validateEvidence, renderQaMarkdown } from "./evaluator.js";
 export type { EvaluationOutput } from "./evaluator.js";
+export { ensureProjectDependencies, findProjectPlaywrightCli, projectDependencyRoot } from "./project-dependencies.js";

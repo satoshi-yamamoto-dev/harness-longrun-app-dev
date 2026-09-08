@@ -1,5 +1,8 @@
 import { createRequire as __createRequire } from "node:module"; const require = __createRequire(import.meta.url);
 import {
+  runCommand
+} from "./chunk-DBOTXM3D.js";
+import {
   requirementIds
 } from "./chunk-FJRNEWY2.js";
 import {
@@ -352,6 +355,51 @@ var Evaluator = class {
   }
 };
 
+// runtime/src/evaluator/project-dependencies.ts
+import { lstat, mkdir as mkdir2, readFile as readFile5, realpath as realpath3, stat as stat3, writeFile } from "node:fs/promises";
+import { join as join2, resolve as resolve5 } from "node:path";
+function projectDependencyRoot(projectRoot) {
+  return resolve5(projectRoot, ".longrun-app-dev/deps");
+}
+async function findProjectPlaywrightCli(projectRoot) {
+  const root = projectDependencyRoot(projectRoot);
+  const packageRoot = join2(root, "node_modules/@playwright/mcp");
+  try {
+    const manifest = JSON.parse(await readFile5(join2(packageRoot, "package.json"), "utf8"));
+    if (manifest.version !== PLAYWRIGHT_MCP_VERSION) throw new Error(`Expected Playwright MCP ${PLAYWRIGHT_MCP_VERSION}, found ${manifest.version}`);
+    const cli = join2(packageRoot, "cli.js");
+    if (!(await stat3(cli)).isFile()) throw new Error("Playwright MCP CLI is not a file");
+    return cli;
+  } catch (error) {
+    throw new Error(`Playwright MCP is not installed correctly in ${root}. Run init to prepare dependencies. ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+async function install(directory) {
+  const result = await runCommand("setup", "npm", ["install", "--prefix", ".", "--save-exact", "--no-audit", "--no-fund", `@playwright/mcp@${PLAYWRIGHT_MCP_VERSION}`], directory);
+  if (result.status !== "passed") throw new Error(`Dependency installation failed. Check npm and network access, then run init again. ${result.stderr}`);
+}
+async function ensureProjectDependencies(projectRoot, installer = install) {
+  const project = await realpath3(projectRoot);
+  const root = projectDependencyRoot(project);
+  for (const directory of [join2(project, ".longrun-app-dev"), root]) {
+    await mkdir2(directory, { recursive: true });
+    if ((await lstat(directory)).isSymbolicLink() || await realpath3(directory) !== directory) throw new Error("Dependency directory must not redirect");
+  }
+  try {
+    await findProjectPlaywrightCli(project);
+    return { status: "available", root };
+  } catch {
+  }
+  try {
+    await writeFile(join2(root, "package.json"), JSON.stringify({ name: "longrun-project-dependencies", private: true }, null, 2) + "\n", { flag: "wx" });
+  } catch (error) {
+    if (error.code !== "EEXIST") throw error;
+  }
+  await installer(root);
+  await findProjectPlaywrightCli(project);
+  return { status: "installed", root };
+}
+
 export {
   PLAYWRIGHT_MCP_VERSION,
   PLAYWRIGHT_TOOLS,
@@ -369,6 +417,9 @@ export {
   validateQaReferences,
   validateEvidence,
   renderQaMarkdown,
-  Evaluator
+  Evaluator,
+  projectDependencyRoot,
+  findProjectPlaywrightCli,
+  ensureProjectDependencies
 };
-//# sourceMappingURL=chunk-LU5E62DC.js.map
+//# sourceMappingURL=chunk-4O6357AP.js.map

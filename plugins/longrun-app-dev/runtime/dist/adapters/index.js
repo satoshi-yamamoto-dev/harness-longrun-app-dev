@@ -3,7 +3,8 @@ import {
   AdapterStartError,
   WebProjectAdapter,
   detectWebProject
-} from "../chunks/chunk-4XGML6K3.js";
+} from "../chunks/chunk-4KK4ZLQB.js";
+import "../chunks/chunk-DBOTXM3D.js";
 import "../chunks/chunk-6PDSFK2S.js";
 export {
   AdapterStartError,

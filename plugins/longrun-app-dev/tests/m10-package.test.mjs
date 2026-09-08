@@ -1,3 +1,4 @@
+import { seedProjectMcp } from "./helpers/project-mcp.mjs";
 import assert from "node:assert/strict";
 import { mkdtemp, mkdir, readFile } from "node:fs/promises";
 import { execFile } from "node:child_process";
@@ -27,6 +28,7 @@ test("distributed files start without development dependencies and preserve init
   const plugin = join(root, "plugin");
   const app = join(root, "app");
   await mkdir(app);
+  await seedProjectMcp(app);
   const manifest = JSON.parse(await readFile(join(source, "package.json"), "utf8"));
   const candidate = await prepareRelease(source, plugin);
   assert.equal(candidate.published, false);

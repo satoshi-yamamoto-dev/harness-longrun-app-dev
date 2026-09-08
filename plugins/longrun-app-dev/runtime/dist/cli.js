@@ -1,16 +1,19 @@
 import { createRequire as __createRequire } from "node:module"; const require = __createRequire(import.meta.url);
 import {
   Orchestrator,
+  acquireRunLock,
   cleanRun,
   recoverRunLock
-} from "./chunks/chunk-L6AMT4NG.js";
+} from "./chunks/chunk-MWXF4HW7.js";
 import {
-  findPlaywrightCli
-} from "./chunks/chunk-LU5E62DC.js";
+  ensureProjectDependencies,
+  findProjectPlaywrightCli
+} from "./chunks/chunk-4O6357AP.js";
 import "./chunks/chunk-EBCTSJ3O.js";
 import {
   WebProjectAdapter
-} from "./chunks/chunk-4XGML6K3.js";
+} from "./chunks/chunk-4KK4ZLQB.js";
+import "./chunks/chunk-DBOTXM3D.js";
 import {
   loadConfig
 } from "./chunks/chunk-FSOMYPVC.js";
@@ -85,7 +88,7 @@ async function inspectRuns(projectRoot, runId) {
   }
   return { runs: summaries, note: "Persisted state only; phase does not prove that a process is alive" };
 }
-async function inspectEnvironment(root, pluginRoot2) {
+async function inspectEnvironment(root, _pluginRoot) {
   const checks = { node: process.version, authentication: "not-tested", browserLaunch: "not-tested" };
   let complete = true;
   const check = async (name, operation) => {
@@ -103,7 +106,7 @@ async function inspectEnvironment(root, pluginRoot2) {
     if (Object.values(config.models).some((model) => model.includes("<"))) throw new Error("Model placeholders");
     return { models: config.models, limits: config.limits };
   });
-  await check("playwright", () => findPlaywrightCli(pluginRoot2));
+  await check("playwright", () => findProjectPlaywrightCli(root));
   if (process.platform === "win32") {
     await check("browser", async () => {
       for (const directory of [process.env["ProgramFiles(x86)"] ?? "C:\\Program Files (x86)", process.env.ProgramFiles ?? "C:\\Program Files"]) {
@@ -138,7 +141,7 @@ async function main(args) {
 
 Usage: longrun-app-dev <command>
 
-init: create config without overwriting existing settings
+init: create config and install project-local Playwright MCP dependencies
 start <request>: run Planner, Generator and required Web QA under configured limits
 status [run-id]: inspect saved Run states
 doctor: inventory configuration and dependencies (no model or browser launch)
@@ -163,7 +166,7 @@ clean <run-id>: delete one terminal Run's saved artifacts
   }
   if (command === "resume") {
     if (request.length !== 1) throw new Error("Usage: resume <run-id>");
-    const result = await new Orchestrator(new DefaultSessionRunner(new ClaudeAgentSdkClient()), new WebProjectAdapter(root)).resume(root, request[0], { cliPath: await findPlaywrightCli(pluginRoot), browser: process.platform === "win32" ? "msedge" : "chromium" });
+    const result = await new Orchestrator(new DefaultSessionRunner(new ClaudeAgentSdkClient()), new WebProjectAdapter(root)).resume(root, request[0], { cliPath: await findProjectPlaywrightCli(root), browser: process.platform === "win32" ? "msedge" : "chromium" });
     writeResult({ status: result.state.phase.toLowerCase(), runRoot: result.layout.runRoot, usage: result.state.usage });
     return result.state.phase === "COMPLETED" ? 0 : 1;
   }
@@ -196,16 +199,22 @@ clean <run-id>: delete one terminal Run's saved artifacts
     return result.complete ? 0 : 2;
   }
   if (command === "init") {
-    await mkdir(join2(root, ".longrun-app-dev"), { recursive: true });
-    let status = "initialized";
+    const lock = await acquireRunLock(root);
     try {
-      await copyFile(join2(pluginRoot, "templates/project-config.yaml"), configPath, constants.COPYFILE_EXCL);
-    } catch (error) {
-      if (error.code !== "EEXIST") throw error;
-      status = "already-initialized";
+      await mkdir(join2(root, ".longrun-app-dev"), { recursive: true });
+      let status = "initialized";
+      try {
+        await copyFile(join2(pluginRoot, "templates/project-config.yaml"), configPath, constants.COPYFILE_EXCL);
+      } catch (error) {
+        if (error.code !== "EEXIST") throw error;
+        status = "already-initialized";
+      }
+      const dependencies = await ensureProjectDependencies(root);
+      writeResult({ status, configPath, dependencies, next: "Set model IDs and explicit cost/time limits before start. A supported browser must already be installed." });
+      return 0;
+    } finally {
+      await lock.release();
     }
-    writeResult({ status, configPath, next: "Set model IDs and explicit cost/time limits before start. Playwright MCP and a supported browser must already be installed." });
-    return 0;
   }
   if (command !== "start") throw new Error(`Unknown command: ${command}`);
   if (!request.join(" ").trim()) throw new Error("start requires an application request");
@@ -221,7 +230,7 @@ clean <run-id>: delete one terminal Run's saved artifacts
   const initialGit = { headSha, branch: await git(["branch", "--show-current"]) || "detached", hadUncommittedChanges: (await git(["status", "--porcelain"])).length > 0 };
   if (initialGit.hadUncommittedChanges) throw new Error("start requires a clean Git working tree; preserve and commit your changes before running");
   if (initialGit.branch === "detached") throw new Error("start requires a named Git branch");
-  const cliPath = await findPlaywrightCli(pluginRoot);
+  const cliPath = await findProjectPlaywrightCli(root);
   const run = await new Orchestrator(new DefaultSessionRunner(new ClaudeAgentSdkClient()), new WebProjectAdapter(root)).run({
     request: request.join(" "),
     projectRoot: root,

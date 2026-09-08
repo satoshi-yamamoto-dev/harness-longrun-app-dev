@@ -19,7 +19,7 @@ Claude Code内で実行します。
 /longrun-app-dev:init
 ```
 
-`.longrun-app-dev/config.yaml` を作成します。初回は `initialized`、既にある場合は `already-initialized` が返り、既存の設定は上書きしません。
+`.longrun-app-dev/config.yaml` を作成します。初回は `initialized`、既にある場合は `already-initialized` が返り、既存の設定は上書きしません。加えて `.longrun-app-dev/deps/` のPlaywright MCPを確認し、不足・版違い・不完全な導入があればnpmでインストールします。返される `dependencies.status` は、導入した場合 `installed`、再利用した場合 `available` です。初回の導入にはネットワーク接続が必要です。実行中のRunがある場合は、その終了後に実行してください。
 
 | 設定 | 用途 |
 | --- | --- |
@@ -40,7 +40,7 @@ Claude Code内で実行します。
 node "<plugin-dir>/runtime/dist/cli.js" doctor
 ```
 
-設定、Git、固定版Playwright MCP、WindowsのEdgeの存在を確認します。`incomplete` なら不足する項目を修正してください。モデルやブラウザは起動しません。macOS/Linuxではブラウザ検出が未対応のため、ブラウザは `not-tested` になります。
+設定、Git、プロジェクトの `.longrun-app-dev/deps/` にある固定版Playwright MCP、WindowsのEdgeの存在を確認します。依存不足なら `init` を再実行してください。`doctor`・`start`・`resume` 自体は依存をインストールしません。`incomplete` なら不足する項目を修正してください。モデルやブラウザは起動しません。macOS/Linuxではブラウザ検出が未対応のため、ブラウザは `not-tested` になります。
 
 ## 3. 開発を開始する：start
 
@@ -134,7 +134,7 @@ node "<plugin-dir>/runtime/dist/cli.js" recover-lock
 node "<plugin-dir>/runtime/dist/cli.js" clean "<run-id>"
 ```
 
-指定した終了済みRunの記録を削除し、`cleaned` を返します。アプリのコードやGitブランチは残ります。実行中のRunや、プロジェクトのロックがある場合は削除できません。
+指定した終了済みRunの記録を削除し、`cleaned` を返します。アプリのコードやGitブランチ、設定、`.longrun-app-dev/deps/` の依存は残ります。実行中のRunや、プロジェクトのロックがある場合は削除できません。
 
 ## 困ったとき
 
@@ -142,9 +142,13 @@ node "<plugin-dir>/runtime/dist/cli.js" clean "<run-id>"
 | --- | --- |
 | モデルの未設定エラー | `models` の3つのプレースホルダーを置き換えたか |
 | 未コミット変更のエラー | `git status --short` で差分を確認し、保存・レビュー・コミットしたか |
-| MCPが見つからない／版が違う | `LONGRUN_PLAYWRIGHT_ROOT` と `@playwright/mcp@0.0.80` の導入先が一致しているか |
-| 別ターミナルでだけ動かない | 環境変数を設定し直したか、Nodeとnpmの参照先が同じか |
+| MCPが見つからない／版が違う | 対象プロジェクトで `init` を再実行して依存を復元する |
+| 別ターミナルでだけ動かない | 対象プロジェクトのルートにいるか、Nodeとnpmが実行できるか |
 | 評価前のアプリ起動に失敗 | アプリの依存、`build`、`start` または `dev` スクリプトと `logs/` を確認 |
 | 上限に達して停止 | レポートを確認し、要求を小さくするか、次のRunの上限を見直す |
 
 [← クイックスタート](setup.md) ｜ [機能の概要に戻る](index.md)
+
+## 従来の環境変数方式から移行する
+
+Plugin更新後、対象プロジェクトで `init` を一度実行してください。通常のCLIは `LONGRUN_PLAYWRIGHT_ROOT` を参照せず、プロジェクト内の依存を使用します。外部フォルダの依存を移動する必要はありません。ブラウザ本体は引き続き別途必要です。

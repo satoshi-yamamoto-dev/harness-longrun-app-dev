@@ -4,7 +4,7 @@ import { join, resolve } from "node:path";
 import { promisify } from "node:util";
 import { ArtifactStore } from "../artifacts/index.js";
 import { loadConfig } from "../config/index.js";
-import { findPlaywrightCli } from "../evaluator/index.js";
+import { findProjectPlaywrightCli } from "../evaluator/index.js";
 import type { RunState } from "../contracts/index.js";
 
 export async function inspectRuns(projectRoot: string, runId?: string): Promise<unknown> {
@@ -39,7 +39,7 @@ export async function inspectRuns(projectRoot: string, runId?: string): Promise<
   return { runs: summaries, note: "Persisted state only; phase does not prove that a process is alive" };
 }
 
-export async function inspectEnvironment(root: string, pluginRoot: string): Promise<{ checks: Record<string, unknown>; complete: boolean }> {
+export async function inspectEnvironment(root: string, _pluginRoot: string): Promise<{ checks: Record<string, unknown>; complete: boolean }> {
   const checks: Record<string, unknown> = { node: process.version, authentication: "not-tested", browserLaunch: "not-tested" };
   let complete = true;
   const check = async (name: string, operation: () => Promise<unknown>) => {
@@ -53,7 +53,7 @@ export async function inspectEnvironment(root: string, pluginRoot: string): Prom
     if (Object.values(config.models).some((model) => model.includes("<"))) throw new Error("Model placeholders");
     return { models: config.models, limits: config.limits };
   });
-  await check("playwright", () => findPlaywrightCli(pluginRoot));
+  await check("playwright", () => findProjectPlaywrightCli(root));
   if (process.platform === "win32") {
     await check("browser", async () => {
       for (const directory of [process.env["ProgramFiles(x86)"] ?? "C:\\Program Files (x86)", process.env.ProgramFiles ?? "C:\\Program Files"]) {

@@ -11,13 +11,17 @@ import {
   applyWebThresholds,
   createEvaluatorAgent,
   createPlaywrightServer,
+  ensureProjectDependencies,
   findPlaywrightCli,
+  findProjectPlaywrightCli,
+  projectDependencyRoot,
   renderQaMarkdown,
   toolText,
   validateEvidence,
   validateQaReferences,
   validateThresholds
-} from "../chunks/chunk-LU5E62DC.js";
+} from "../chunks/chunk-4O6357AP.js";
+import "../chunks/chunk-DBOTXM3D.js";
 import "../chunks/chunk-FJRNEWY2.js";
 import "../chunks/chunk-3FFAZEYU.js";
 import "../chunks/chunk-ZISWBL5N.js";
@@ -37,7 +41,10 @@ export {
   applyWebThresholds,
   createEvaluatorAgent,
   createPlaywrightServer,
+  ensureProjectDependencies,
   findPlaywrightCli,
+  findProjectPlaywrightCli,
+  projectDependencyRoot,
   renderQaMarkdown,
   toolText,
   validateEvidence,
