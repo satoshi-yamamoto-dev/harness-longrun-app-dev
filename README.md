@@ -2,6 +2,8 @@
 
 Planner、Generator、Evaluatorを分離し、アプリの実装と実動作の評価を反復するClaude Code Pluginです。現在は開発中です。
 
+[ユーザーガイド](https://satoshi-yamamoto-dev.github.io/harness-longrun-app-dev/)を公開しています。
+
 ## インストールと初期構築
 
 公開されたMarketplaceを使う場合、Claude Code内で次を実行します。`<github-owner>`は実際の公開先の所有者名に置き換えてください。公開・クリーン環境でのインストール検証は開発計画の後続項目です。
