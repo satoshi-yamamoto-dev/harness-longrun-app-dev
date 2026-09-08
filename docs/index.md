@@ -9,6 +9,8 @@ title: 機能の概要
 
 ## 機能の概要
 
+`harness-longrun-app-dev` は「長時間実行と復旧・予算管理を行う自動実行ランタイム」です。
+
 ![Plannerが仕様を作成し、Generatorが実装し、Evaluatorが評価してGeneratorへフィードバックする流れ](assets/planner-generator-evaluator.png)
 
 3つのサブエージェントを使用し、仕様作成・実装・評価をそれぞれ分担します。
